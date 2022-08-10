@@ -84,7 +84,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: MaterialButton(
                   onPressed: () {
                     //Implement login functionality.
-                    Navigator.pushNamed(context, '/loign');
                   },
                   minWidth: 200.0,
                   height: 42.0,
