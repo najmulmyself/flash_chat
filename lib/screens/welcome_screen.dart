@@ -5,7 +5,29 @@ class WelcomeScreen extends StatefulWidget {
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  // NEED TO DECLARE CONTROLLER AS A GLOBAL VARIABLE FOR ANIMATING SOMETHIG
+
+  @override
+  // INITIALIZING THE CONTROLLER IN INITSTATE BCZ WE WANT TO INITIALIZE IT ONLY ONCE
+  void initState() {
+    controller = AnimationController(
+      duration: Duration(seconds: 1),
+      upperBound: 100, // BY DEFAULT IT IS 1.0 , WE CAN CHANGE IT TO ANY VALUE
+      vsync:
+          this, // THIS REFERS TO THE STATE CLASS ITSELF || NEED TO ACCESS THIS BEFORE INITIALIZING THE SINGLE TICKER PROVIDER STATE MIXIN
+    );
+    controller.forward(); // THIS WILL ANIMATE THE CONTROLLER FORWARD
+    controller.addListener(() {
+      // THIS WILL LISTEN TO THE CONTROLLER AND WILL UPDATE THE STATE OF THE WIDGET
+      setState(() {});
+      // print(controller.value); // THIS WILL PRINT THE VALUE OF THE CONTROLLER
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,6 +97,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 40,
+            ),
+            Center(
+              // THIS WON'T WORK FOR THE FIRST TIME | NEED TO CALL SETSTATE TO UPDATE THE UI
+              child: Text(
+                '${controller.value.toInt()}%',
+                style: TextStyle(fontSize: 30),
+              ), // NEED TO SET IT TO A STRING | TEXT ONLY TAKES STRING
+            )
           ],
         ),
       ),
