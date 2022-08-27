@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -6,6 +7,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _auth = FirebaseAuth.instance;
+  String email;
+  String password;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +33,9 @@ class _LoginScreenState extends State<LoginScreen> {
             TextField(
               onChanged: (value) {
                 //Do something with the user input.
+                setState(() {
+                  email = value;
+                });
               },
               decoration: InputDecoration(
                 hintText: 'Enter your email',
@@ -55,6 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
             TextField(
               onChanged: (value) {
                 //Do something with the user input.
+                setState(() {
+                  password = value;
+                });
               },
               decoration: InputDecoration(
                 hintText: 'Enter your password.',
@@ -87,6 +97,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: MaterialButton(
                   onPressed: () {
                     //Implement login functionality.
+                    final login = _auth
+                        .signInWithEmailAndPassword(
+                            email: email, password: password)
+                        .then((value) => Navigator.pushNamed(context, '/chat'))
+                        .catchError((err) => print(err));
                   },
                   minWidth: 200.0,
                   height: 42.0,
