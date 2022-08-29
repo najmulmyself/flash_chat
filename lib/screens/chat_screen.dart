@@ -71,6 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ElevatedButton(
                     onPressed: () {
                       //Implement send functionality.
+                      // adding data to firestore
                       _firestore.collection('messages').add({
                         'text': messageText,
                         'sender': loggedInUser.email,
