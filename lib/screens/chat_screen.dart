@@ -32,6 +32,19 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  messagesStream() async {
+    // await for (var snapshot in _firestore.collection('messages').snapshots()) {
+    //   for (var message in snapshot.docs) {
+    //     print(message.data()); // paranthesis should be passed to data()
+    //   }
+    // }
+
+    final snapshot = await _firestore.collection('messages').snapshots();
+    snapshot.forEach((element) {
+      print(element);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,10 +52,12 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: null,
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.close), // changed icon to another one for retriving data from firebase
+              icon: Icon(Icons
+                  .close), // changed icon to another one for retriving data from firebase
               onPressed: () {
-                _auth.signOut();
-                Navigator.pop(context);
+                messagesStream();
+                // _auth.signOut();
+                // Navigator.pop(context);
                 //Implement logout functionality
               }),
         ],
