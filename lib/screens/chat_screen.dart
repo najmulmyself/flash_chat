@@ -39,7 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: null,
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.close),
+              icon: Icon(Icons.close), // changed icon to another one for retriving data from firebase
               onPressed: () {
                 _auth.signOut();
                 Navigator.pop(context);
