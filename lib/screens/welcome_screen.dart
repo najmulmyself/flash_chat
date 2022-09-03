@@ -8,7 +8,7 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
-  AnimationController controller;
+  AnimationController ? controller;
   // NEED TO DECLARE CONTROLLER AS A GLOBAL VARIABLE FOR ANIMATING SOMETHIG
 
   @override
@@ -20,8 +20,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       vsync:
           this, // THIS REFERS TO THE STATE CLASS ITSELF || NEED TO ACCESS THIS BEFORE INITIALIZING THE SINGLE TICKER PROVIDER STATE MIXIN
     );
-    controller.forward(); // THIS WILL ANIMATE THE CONTROLLER FORWARD
-    controller.addListener(() {
+    controller?.forward(); // THIS WILL ANIMATE THE CONTROLLER FORWARD
+    controller?.addListener(() {
       // THIS WILL LISTEN TO THE CONTROLLER AND WILL UPDATE THE STATE OF THE WIDGET
       setState(() {});
       // print(controller.value); // THIS WILL PRINT THE VALUE OF THE CONTROLLER
@@ -111,7 +111,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             Center(
               // THIS WON'T WORK FOR THE FIRST TIME | NEED TO CALL SETSTATE TO UPDATE THE UI
               child: Text(
-                '${controller.value.toInt()}%',
+                '${controller?.value.toInt()}%',
                 style: TextStyle(fontSize: 30),
               ), // NEED TO SET IT TO A STRING | TEXT ONLY TAKES STRING
             )

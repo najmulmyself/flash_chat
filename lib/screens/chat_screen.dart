@@ -14,8 +14,8 @@ class _ChatScreenState extends State<ChatScreen> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   var loggedInUser;
-  String messageText;
-  String messageSender;
+  String? messageText;
+  // String? messageSender;
 
   @override
   void initState() {
@@ -86,73 +86,89 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            StreamBuilder<QuerySnapshot>(
+            StreamBuilder(
               stream: _firestore.collection('messages').snapshots(),
               builder: (context, AsyncSnapshot snapshot) {
                 // this is the snapshot we got response from stream;
                 //let's check if data null or not by checking snapshot.hasdata;
-                if (snapshot.hasData) {
-                  final messages = snapshot.data
-                      .docs; // LIST OF ALL DOCUMENT | DEFAULT WAS DYNAMIC BY CHANGING QUERYSNAPSHOT IT CHANGES TO LIST OF QueryDocumentSnapshot
-                  // REFACTOR CODE:
-                  // MESSAGES SIMPLY IS A COLLECTION OF DOCUMENTS LIKE UID
-                  // WE NEED TO LOOP THROUGH THOSE DOCUMENTS
-                  // WE CAN USE FOREACH / MAP/ FOR IN LOOP TO ITERATE EACH ITEM
-                  // WHY WE NEED TO ADD TYPE OF STREAM TO QUERYSNAPSHOT?
-                  // NOT ADDING QUERYSNAPSHOT DOESN'T EFFECT ON RESULT
-
-                  // print(messages[1]['sender']);
-
-                  // messages.map((e) => print(e['text']));
-
-                  // TESTING FOR EACH METHOD
-
-                  //  messages.forEach((message) {
-                  //     print('for each method:  ${message['text']}');
-                  //   });
-                  // didn't get why use need to use <QuerySnapshot> to change data type dynamic to QuerySnapshot;
-
-                  List<Text> messageWidgets = [];
-                  // messages.forEach(
-                  //   (message) {
-
-                  //   },
-                  for (var message in messages) {
-
-                    
-// ERROR HAPPEND WAS Bad state: field does not exist within the DocumentSnapshotPlatform
-// ref link : https://stackoverflow.com/questions/64949640/flutter-unhandled-exception-bad-state-field-does-not-exist-within-the-documen
-// WHAT I CHANGED:
-                    // CHANGED SNAPSHOT TO ASYNCSNAPSHOT IN BUILDER
-                    // ACCESS EACH DATA MESSAGE.DATA()['TEXT'] INSTED OF MESSAGE['TEXT']
-
-                    messageText = message.data()['text'];
-                    messageSender = message.data()['sender'];
-
-                    final messageWidget =
-                        Text('$messageText from $messageSender');
-                    messageWidgets.add(messageWidget);
-                  }
-                  // );
-                  // for (var message in messages) {
-                  //   final messageText = message;
-                  //   // print('dummy data : ${message['sender']}');
-                  //   // }
-                  // }
-                  // return messageText == null
-                  //     ? Text('No data')
-                  //     : Column(
-                  //         children: [
-                  //           Text(messageText),
-                  //           Text(messageSender),
-                  //         ],
-                  //       );
-                  return Column(
-                    children: messageWidgets,
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
-
-                  // ITS WORKING FOR A REASON 🙂 I DON'T KNOW WHY 
                 }
+                final messages = snapshot.data
+                    .docs; // LIST OF ALL DOCUMENT | DEFAULT WAS DYNAMIC BY CHANGING QUERYSNAPSHOT IT CHANGES TO LIST OF QueryDocumentSnapshot
+                // REFACTOR CODE:
+                // MESSAGES SIMPLY IS A COLLECTION OF DOCUMENTS LIKE UID
+                // WE NEED TO LOOP THROUGH THOSE DOCUMENTS
+                // WE CAN USE FOREACH / MAP/ FOR IN LOOP TO ITERATE EACH ITEM
+                // WHY WE NEED TO ADD TYPE OF STREAM TO QUERYSNAPSHOT?
+                // NOT ADDING QUERYSNAPSHOT DOESN'T EFFECT ON RESULT
+
+                // print(messages[1]['sender']);
+
+                // messages.map((e) => print(e['text']));
+
+                // TESTING FOR EACH METHOD
+
+                //  messages.forEach((message) {
+                //     print('for each method:  ${message['text']}');
+                //   });
+                // didn't get why use need to use <QuerySnapshot> to change data type dynamic to QuerySnapshot;
+
+                List<MessageBubble> messageWidgets = [];
+                // // MESSAGE BUBBLE IN NOT TEXT TYPE WIDGET ANYMORE
+                // IT IS MESSAGE BUBBLE TYPE WIDGET
+                // messages.forEach(
+                //   (message) {
+
+                //   },
+                for (var message in messages) {
+                  // ERROR HAPPEND WAS Bad state: field does not exist within the DocumentSnapshotPlatform
+                  // ref link : https://stackoverflow.com/questions/64949640/flutter-unhandled-exception-bad-state-field-does-not-exist-within-the-documen
+                  // WHAT I CHANGED:
+                  // CHANGED SNAPSHOT TO ASYNCSNAPSHOT IN BUILDER
+                  // ACCESS EACH DATA MESSAGE.DATA()['TEXT'] INSTED OF MESSAGE['TEXT']
+
+                  final messageText = message.data()['text'];
+                  final messageSender = message.data()['sender'];
+
+                  final messageWidget = MessageBubble(
+                    text: messageText!,
+                    sender: messageSender!,
+                  );
+                  messageWidgets.add(
+                      messageWidget); // MESSAGE BUBBLE IN NOT TEXT TYPE WIDGET ANYMORE
+                  // IT IS MESSAGE BUBBLE TYPE WIDGET
+                }
+                // );
+                // for (var message in messages) {
+                //   final messageText = message;
+                //   // print('dummy data : ${message['sender']}');
+                //   // }
+                // }
+                // return messageText == null
+                //     ? Text('No data')
+                //     : Column(
+                //         children: [
+                //           Text(messageText),
+                //           Text(messageSender),
+                //         ],
+                //       );
+
+                // LISTVIEW BY DEFAULT IS SCROLLABLE BUT IF WE IMPLEMENT THIS SCEEEN WILL BE BLANK
+                // BCZ WIDGET HAS ANOTHER WIDGET INSIDE IT (CONTAINER WITH SEND MSG)
+                // NOW WE NEED TO WRAP IT WITH EXPANDED WIDGET
+                // EXPANDED WIDGET WILL TAKE ALL THE SPACE AVAILABLE REST WILL REMAIN SAME
+
+                return Expanded(
+                  child: ListView(
+                    children: messageWidgets,
+                  ),
+                );
+
+                // ITS WORKING FOR A REASON 🙂 I DON'T KNOW WHY
+                // }
               },
             ),
             Container(
@@ -188,6 +204,41 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class MessageBubble extends StatelessWidget {
+  MessageBubble({required this.sender, required this.text});
+  final String sender;
+  final String text;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          // Text(
+          //   sender,
+          //   style: TextStyle(
+          //     fontSize: 12,
+          //     color: Colors.black54,
+          //   ),
+          // ),
+          Material(
+            borderRadius: BorderRadius.circular(30.0),
+            elevation: 5,
+            color: Colors.lightBlueAccent,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Text(
+                '$text',
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
