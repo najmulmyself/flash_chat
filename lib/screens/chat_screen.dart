@@ -85,22 +85,34 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            StreamBuilder(
+            StreamBuilder<QuerySnapshot>(
               stream: _firestore.collection('messages').snapshots(),
               builder: (context, snapshot) {
                 // this is the snapshot we got response from stream;
                 //let's check if data null or not by checking snapshot.hasdata;
                 // if (snapshot.hasData) {
                 final messages = snapshot.data.docs;
+                // REFACTOR CODE:
+                // MESSAGES SIMPLY IS A COLLECTION OF DOCUMENTS LIKE UID
+                // WE NEED TO LOOP THROUGH THOSE DOCUMENTS
+                // WE CAN USE FOREACH / MAP/ FOR IN LOOP TO ITERATE EACH ITEM
+                // WHY WE NEED TO ADD TYPE TO QUERYSNAPSHOT?
+
+                // print(messages[1]['sender']);
+
+                // messages.map((e) => print(e['text']));
+                messages.forEach((m) {
+                  print('for each method:  ${m['text']}');
+                });
                 // didn't get why use need to use <QuerySnapshot> to change data type dynamic to QuerySnapshot;
 
                 // List<Text> messagesWidget = [];
                 for (var message in messages) {
                   final messageText = message;
-                  print('dummy data : ${message['text']}');
+                  // print('dummy data : ${message['sender']}');
                   // }
                 }
-                return Text('dummy text : ${messageText['sender'].t()}');
+                return Text('dummy text : ${messageText}');
               },
             ),
             Container(
