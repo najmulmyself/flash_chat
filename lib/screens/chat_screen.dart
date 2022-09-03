@@ -1,3 +1,5 @@
+// ignore_for_file: missing_return
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -32,29 +34,31 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+// THIS IS THE EXPLAINED CODE TO UNDERSTAND STREAMBUILDER | LETS ADD STERAMBUILDER TO EXECUTE REAL IMPLEMENTATION
+
   messagesStream() async {
-    // await for (var snapshot in _firestore.collection('messages').snapshots()) {
-    //   for (var message in snapshot.docs) {
-    //     print(message.data()); // paranthesis should be passed to data()
-    //   }
-    // }
+    await for (var snapshot in _firestore.collection('messages').snapshots()) {
+      for (var message in snapshot.docs) {
+        print(message.data()); // paranthesis should be passed to data()
+      }
+    }
 
-    final snapshot = await _firestore.collection('messages').snapshots();
-    snapshot.forEach((element) {
-      print(element.docs[0].data());
-      // THIS IS THE TESTING FOR A STEREAM BUILDER
+    // final snapshot = await _firestore.collection('messages').snapshots();
+    // snapshot.forEach((element) {
+    //   print(element.docs[0].data());
+    // THIS IS THE TESTING FOR A STEREAM BUILDER
 
-      // STREAMBUILDRE HAS QUIET FEW STEPS
+    // STREAMBUILDRE HAS QUIET FEW STEPS
 
-      //1. NEED TO CALL ITS COLLECTION ON COLLECTION('COLLECTION NAME')
-      //2. THEN CALL THE SNAPSHOT METHOD ON IT
-      //3. THEN CALL THE FOREACH METHOD ON IT (SNAPSHOTS RETURN SNAPSHOT OBJECTS)
-            //A. SNAPSHOT IS A PICTURE OF ALL DATA => LIKE WHOLE FIREBASE DATA INCLUDING COLLECTION | WE NEED TO EXTARCT ONLY DOCUMENT BY CALLING DOCS() METHOD ON IT
-      //4. THEN SNAPSHOT HAS ALL THE DATA FRAME(PICTURE) , TO ACCESS DOCUMENTS WE NEED TO CALL DOCS() METHOD ON IT | SNAPSHOT.DOCS() RETURNS A LIST OF DOCUMENTS
-      //5. SNAPSHOT.DOCS() IS A LIST OF DOUCMENT, SO WE CAN ITARATE OVER IT USING FOREACH METHOD
-      //6. ITERATING SNAPSHOT.DOCS(), WE CAN FIND EACH OF THE AVAILABLE DOCUMENT
-      //7. AFTER CALLING DATA() ON DOCUMENT, WE CAN GET THE REAL DATA OF EACH DOCUMENT
-    });
+    //1. NEED TO CALL ITS COLLECTION ON COLLECTION('COLLECTION NAME')
+    //2. THEN CALL THE SNAPSHOT METHOD ON IT
+    //3. THEN CALL THE FOREACH METHOD ON IT (SNAPSHOTS RETURN SNAPSHOT OBJECTS)
+    //A. SNAPSHOT IS A PICTURE OF ALL DATA => LIKE WHOLE FIREBASE DATA INCLUDING COLLECTION | WE NEED TO EXTARCT ONLY DOCUMENT BY CALLING DOCS() METHOD ON IT
+    //4. THEN SNAPSHOT HAS ALL THE DATA FRAME(PICTURE) , TO ACCESS DOCUMENTS WE NEED TO CALL DOCS() METHOD ON IT | SNAPSHOT.DOCS() RETURNS A LIST OF DOCUMENTS
+    //5. SNAPSHOT.DOCS() IS A LIST OF DOUCMENT, SO WE CAN ITARATE OVER IT USING FOREACH METHOD
+    //6. ITERATING SNAPSHOT.DOCS(), WE CAN FIND EACH OF THE AVAILABLE DOCUMENT
+    //7. AFTER CALLING DATA() ON DOCUMENT, WE CAN GET THE REAL DATA OF EACH DOCUMENT
+    // });
   }
 
   @override
@@ -81,6 +85,23 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            StreamBuilder<QuerySnapshot>(
+              stream: _firestore.collection('messages').snapshots(),
+              builder: (context, snapshot) {
+                // this is the snapshot we got response from stream;
+                //let's check if data null or not by checking snapshot.hasdata;
+                if (snapshot.hasData) {
+                  final messages = snapshot.data
+                      .docs; // didn't get why use need to use <QuerySnapshot> to change data type dynamic to QuerySnapshot;
+                  List<Text> messagesWidget = [];
+                  for (var message in messages) {
+                    final messageText = message;
+                    print('dummy data : $message');
+                  }
+                }
+                return Text('dummy text : $messageText ');
+              },
+            ),
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
