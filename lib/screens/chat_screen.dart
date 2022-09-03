@@ -90,29 +90,50 @@ class _ChatScreenState extends State<ChatScreen> {
               builder: (context, snapshot) {
                 // this is the snapshot we got response from stream;
                 //let's check if data null or not by checking snapshot.hasdata;
-                // if (snapshot.hasData) {
-                final messages = snapshot.data.docs;
-                // REFACTOR CODE:
-                // MESSAGES SIMPLY IS A COLLECTION OF DOCUMENTS LIKE UID
-                // WE NEED TO LOOP THROUGH THOSE DOCUMENTS
-                // WE CAN USE FOREACH / MAP/ FOR IN LOOP TO ITERATE EACH ITEM
-                // WHY WE NEED TO ADD TYPE TO QUERYSNAPSHOT?
+                if (snapshot.hasData) {
+                  final messages = snapshot.data
+                      .docs; // LIST OF ALL DOCUMENT | DEFAULT WAS DYNAMIC BY CHANGING QUERYSNAPSHOT IT CHANGES TO LIST OF QueryDocumentSnapshot
+                  // REFACTOR CODE:
+                  // MESSAGES SIMPLY IS A COLLECTION OF DOCUMENTS LIKE UID
+                  // WE NEED TO LOOP THROUGH THOSE DOCUMENTS
+                  // WE CAN USE FOREACH / MAP/ FOR IN LOOP TO ITERATE EACH ITEM
+                  // WHY WE NEED TO ADD TYPE OF STREAM TO QUERYSNAPSHOT?
+                  // NOT ADDING QUERYSNAPSHOT DOESN'T EFFECT ON RESULT
 
-                // print(messages[1]['sender']);
+                  // print(messages[1]['sender']);
 
-                // messages.map((e) => print(e['text']));
-                messages.forEach((m) {
-                  print('for each method:  ${m['text']}');
-                });
-                // didn't get why use need to use <QuerySnapshot> to change data type dynamic to QuerySnapshot;
+                  // messages.map((e) => print(e['text']));
 
-                // List<Text> messagesWidget = [];
-                for (var message in messages) {
-                  final messageText = message;
-                  // print('dummy data : ${message['sender']}');
+                  // TESTING FOR EACH METHOD
+
+                  //  messages.forEach((message) {
+                  //     print('for each method:  ${message['text']}');
+                  //   });
+                  // didn't get why use need to use <QuerySnapshot> to change data type dynamic to QuerySnapshot;
+
+                  List<Text> messageWidgets = [];
+                  // messages.forEach(
+                  //   (message) {
+
+                  //   },
+                  for (var message in messages) {
+                    final messageText = message['text'];
+                    final messageSender = message['sender'];
+
+                    final messageWidget =
+                        Text('$messageText from $messageSender');
+                    messageWidgets.add(messageWidget);
+                  }
+                  // );
+                  // for (var message in messages) {
+                  //   final messageText = message;
+                  //   // print('dummy data : ${message['sender']}');
+                  //   // }
                   // }
+                  return Column(
+                    children: messageWidgets,
+                  );
                 }
-                return Text('dummy text : ${messageText}');
               },
             ),
             Container(
