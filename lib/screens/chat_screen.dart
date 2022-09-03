@@ -85,21 +85,22 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            StreamBuilder<QuerySnapshot>(
+            StreamBuilder(
               stream: _firestore.collection('messages').snapshots(),
               builder: (context, snapshot) {
                 // this is the snapshot we got response from stream;
                 //let's check if data null or not by checking snapshot.hasdata;
-                if (snapshot.hasData) {
-                  final messages = snapshot.data
-                      .docs; // didn't get why use need to use <QuerySnapshot> to change data type dynamic to QuerySnapshot;
-                  List<Text> messagesWidget = [];
-                  for (var message in messages) {
-                    final messageText = message;
-                    print('dummy data : $message');
-                  }
+                // if (snapshot.hasData) {
+                final messages = snapshot.data.docs;
+                // didn't get why use need to use <QuerySnapshot> to change data type dynamic to QuerySnapshot;
+
+                // List<Text> messagesWidget = [];
+                for (var message in messages) {
+                  final messageText = message;
+                  print('dummy data : ${message['text']}');
+                  // }
                 }
-                return Text('dummy text : $messageText ');
+                return Text('dummy text : ${messageText['sender'].t()}');
               },
             ),
             Container(
