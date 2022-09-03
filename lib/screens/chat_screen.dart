@@ -15,6 +15,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _auth = FirebaseAuth.instance;
   var loggedInUser;
   String messageText;
+  String messageSender;
 
   @override
   void initState() {
@@ -87,7 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: <Widget>[
             StreamBuilder<QuerySnapshot>(
               stream: _firestore.collection('messages').snapshots(),
-              builder: (context, snapshot) {
+              builder: (context, AsyncSnapshot snapshot) {
                 // this is the snapshot we got response from stream;
                 //let's check if data null or not by checking snapshot.hasdata;
                 if (snapshot.hasData) {
@@ -117,8 +118,16 @@ class _ChatScreenState extends State<ChatScreen> {
 
                   //   },
                   for (var message in messages) {
-                    final messageText = message['text'];
-                    final messageSender = message['sender'];
+
+                    
+// ERROR HAPPEND WAS Bad state: field does not exist within the DocumentSnapshotPlatform
+// ref link : https://stackoverflow.com/questions/64949640/flutter-unhandled-exception-bad-state-field-does-not-exist-within-the-documen
+// WHAT I CHANGED:
+                    // CHANGED SNAPSHOT TO ASYNCSNAPSHOT IN BUILDER
+                    // ACCESS EACH DATA MESSAGE.DATA()['TEXT'] INSTED OF MESSAGE['TEXT']
+
+                    messageText = message.data()['text'];
+                    messageSender = message.data()['sender'];
 
                     final messageWidget =
                         Text('$messageText from $messageSender');
@@ -130,9 +139,19 @@ class _ChatScreenState extends State<ChatScreen> {
                   //   // print('dummy data : ${message['sender']}');
                   //   // }
                   // }
+                  // return messageText == null
+                  //     ? Text('No data')
+                  //     : Column(
+                  //         children: [
+                  //           Text(messageText),
+                  //           Text(messageSender),
+                  //         ],
+                  //       );
                   return Column(
                     children: messageWidgets,
                   );
+
+                  // ITS WORKING FOR A REASON 🙂 I DON'T KNOW WHY 
                 }
               },
             ),
